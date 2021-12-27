@@ -38,6 +38,14 @@ trait TraitIdx
     ];
 
     /**
+     * 导出数据
+     * @var null
+     * create_at: 2021-12-27 15:16:06
+     * update_at: 2021-12-27 15:16:06
+     */
+    protected $idxExport = [];
+
+    /**
      * 自定义查询
      * @var
      * create_at: 2021-12-02 11:46:00
@@ -54,6 +62,12 @@ trait TraitIdx
      */
     public function idx()
     {
+        // 是否导出
+        $exportFlag = Request::param('exportFlag/b');
+        if ($exportFlag) {
+            return $this->export();
+        }
+
         // idx 页
         $this->main();
         // 统计
@@ -62,6 +76,27 @@ trait TraitIdx
         $this->addition();
 
         return $this->idxData;
+    }
+
+    /**
+     * 导出
+     * @return bool
+     * @throws Exception
+     * create_at: 2021-12-27 15:23:07
+     * update_at: 2021-12-27 15:23:07
+     */
+    protected function export()
+    {
+        $this
+            ->typeQuery() // 查询类型
+            ->aliasQuery() // 别名
+            ->customQuery() // 自定义查询
+            ->queryCondi() // 查询条件
+            ->groupQuery() // 分组条件
+            ->orderQuery(); // 排序条件
+
+        $this->idxExport = $this->queryCus->select();
+        return $this->idxExport;
     }
 
     /**
@@ -329,6 +364,7 @@ trait TraitIdx
      * @return bool
      * create_at: 2021-12-06 10:49:55
      * update_at: 2021-12-06 10:49:55
+     * @throws Exception
      */
     protected function main()
     {
@@ -351,6 +387,7 @@ trait TraitIdx
      * sum统计
      * create_at: 2021-12-03 14:51:53
      * update_at: 2021-12-03 14:51:53
+     * @throws Exception
      */
     protected function statistic()
     {
