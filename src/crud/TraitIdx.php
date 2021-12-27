@@ -95,6 +95,12 @@ trait TraitIdx
             ->groupQuery() // 分组条件
             ->orderQuery(); // 排序条件
 
+        // 选中的id
+        $checkedIds = Request::param('checkedIds/a');
+        if ($checkedIds) {
+            $this->queryCus->whereIn($this->pk, $checkedIds);
+        }
+
         $this->idxExport = $this->queryCus->select();
         return $this->idxExport;
     }
