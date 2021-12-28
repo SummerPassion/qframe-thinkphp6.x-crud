@@ -20,6 +20,7 @@ namespace rocket\crud;
 use think\facade\Db;
 use think\facade\Request;
 use Exception;
+use ZipArchive;
 
 /**
  * Trait列表
@@ -63,7 +64,7 @@ trait TraitIdx
     public function idx()
     {
         // 是否导出
-        $exportFlag = Request::param('exportFlag/b');
+        $exportFlag = Request::param('_exportFlag/b');
         if ($exportFlag) {
             return $this->export();
         }
@@ -96,13 +97,140 @@ trait TraitIdx
             ->orderQuery(); // 排序条件
 
         // 选中的id
-        $checkedIds = Request::param('checkedIds/a');
+        $checkedIds = Request::param('_checkedIds');
+
         if ($checkedIds) {
+            if (!is_array($checkedIds)) {
+                $checkedIds = explode(',', $checkedIds);
+            }
             $this->queryCus->whereIn($this->pk, $checkedIds);
         }
 
         $this->idxExport = $this->queryCus->select();
-        return $this->idxExport;
+
+        // 后台导出标记
+        $approachBack = Request::param('_approachBack/b', false);
+        if (!$approachBack) {
+            // 前台导出 仅返回数据
+            return $this->idxExport;
+        } else {
+            // 后台导出
+            // 表头和接口数据映射关系
+            $mapData = Request::param('_mapData');
+            if (!$mapData) throw new Exception("未定义表头和接口数据映射！");
+            $mapData = json_decode($mapData, true);
+            $title = Request::param('_title', '导出数据');
+            $suffix = Request::param('_suffix', 'xlsx');
+            $this->exportProccess($this->idxExport->toArray(), $title, $mapData, $suffix);
+        }
+    }
+
+    /**
+     * 服务端导出
+     * @param $data
+     * @param $title
+     * @param $header
+     * @param string $suffix
+     * create_at: 2021-12-28 11:30:26
+     * update_at: 2021-12-28 11:30:26
+     */
+    protected function exportProccess($data, $title, $header, string $suffix='xlsx')
+    {
+        if (!empty($data)) {
+            set_time_limit(0);
+            $static = '../runtime/excel/' . date('Y-m',time()) . '/';
+            if (!is_dir($static)) {
+                mkdir($static, 0777, true);
+            }
+            // 整合文件路径
+            $title = $static . $title;
+            // 统计总条数
+            $count = count($data);
+            // 每次取多少条 默认2000
+            $limit = 2000; //每次只从数组取条数
+            // buffer计数器
+            $cnt = 0;
+            $fileNameArr = array();
+            // 分段执行,以免内存写满
+            for ($i = 0; $i < ceil($count / $limit); $i++) {
+                $fp = fopen($title . '_' . $i . '.csv', 'w'); //生成临时文件
+                $fileNameArr[] = $title . '_' .  $i . '.csv';//将临时文件保存起来
+                // 第一次执行时将表头写入
+                if($i == 0){
+                    fwrite($fp,chr(0xEF).chr(0xBB).chr(0xBF));
+                    fputcsv($fp, array_values($header));
+                }
+                // 查询出数据
+                $keySort = array_keys($header);
+                $pieceDatas =  array_slice($data,$i * $limit, $limit);
+                foreach ($pieceDatas as $k=>$v) {
+                    $tmp = array_merge(array_flip($keySort), $v);
+                    foreach ($tmp as $g => $h) {
+                        if (!in_array($g, $keySort)) {
+                            unset($tmp[$g]);
+                        }
+                    }
+                    $cnt++;
+                    // 执行下一次循环之前清空缓冲区
+                    if ($limit == $cnt) {
+                        ob_flush();
+                        flush();
+                        $cnt = 0;
+                    }
+                    // 每行写入到临时文件
+                    fputcsv($fp, array_values($tmp));
+                }
+                fclose($fp);  //每生成一个文件关闭
+            }
+
+            // 将所有临时文件合并成一个
+            foreach ($fileNameArr as $file){
+                // 如果是文件，提出文件内容，写入目标文件
+                if(is_file($file)){
+                    $fileName = $file;
+                    // 打开临时文件
+                    $handle1 = fopen($fileName,'r');
+                    // 读取临时文件
+                    if($str = fread($handle1, filesize($fileName))){
+                        // 关闭临时文件
+                        fclose($handle1);
+                        // 打开或创建要合并成的文件，往末尾插入的方式添加内容并保存
+                        $handle2 = fopen($title.'.csv','a+');
+                        // 写入内容
+                        if(fwrite($handle2, $str)){
+                            // 关闭合并的文件，避免浪费资源
+                            fclose($handle2);
+                        }
+                    }
+                }
+            }
+
+            //将文件压缩，避免文件太大，下载慢
+            $zip = new ZipArchive();
+            $outputFilename = $title . ".zip";
+            $zip->open($outputFilename, ZipArchive::CREATE);   // 打开压缩包
+            $zip->addFile($title.'.csv', basename($title.'.csv'));   // 向压缩包中添加文件
+            $zip->close();  //关闭压缩包
+
+            foreach ($fileNameArr as $file) {
+                @unlink($file); //删除csv临时文件
+            }
+
+            //输出压缩文件提供下载
+            header("Cache-Control: max-age=0");
+            header("Content-Description: File Transfer");
+            header('Content-disposition: attachment; filename=' . basename($outputFilename)); // 文件名
+            header("Content-Type: application/zip"); // zip格式的
+            header("Content-Transfer-Encoding: binary");
+            header('Content-Length: ' . filesize($outputFilename));
+
+            @readfile($outputFilename);//输出文件;
+            @unlink($title . '.csv');
+            @unlink($outputFilename); //删除压缩包临时文件
+            @rmdir($static); // 清除目录
+
+            exit();
+        }
     }
 
     /**
