@@ -87,7 +87,7 @@ trait TraitIdx
      * update_at: 2021-12-27 15:23:07
      */
     protected function export()
-    {throw new Exception("未定义表头和接口数据映射！");
+    {
         $this
             ->typeQuery() // 查询类型
             ->aliasQuery() // 别名
