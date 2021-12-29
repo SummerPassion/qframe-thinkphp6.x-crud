@@ -19,6 +19,7 @@ namespace rocket\dispatcher;
 
 use think\facade\Request;
 use think\facade\View;
+use Exception;
 
 /**
  * idx 调度
@@ -39,7 +40,11 @@ trait TraitIdxDispatcher
         $model = $this->targetModel();
 
         if (Request::isPost()) {
-            return json_suc($model->$action());
+            try {
+                return json_suc($model->$action());
+            } catch (Exception $exception) {
+                return json_err($exception->getMessage());
+            }
         } else {
             // 渲染模板变量
             View::assign($model->idxAssign());
