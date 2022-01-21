@@ -68,7 +68,7 @@ trait TraitUpdDispatcher
             }
         } else {
             // 目标更新数据
-            $data = $model->where("id", $id)->find();
+            $data = $model->where("id", $id)->find()->toArray();
             // assign前处理
             $data = $model->bfrAssign($data);
             // 渲染模板变量
