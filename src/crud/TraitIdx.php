@@ -63,12 +63,6 @@ trait TraitIdx
      */
     public function idx()
     {
-        // 是否导出
-        $exportFlag = Request::param('_exportFlag/b');
-        if ($exportFlag) {
-            return $this->export();
-        }
-
         // idx 页
         $this->main();
         // 统计
@@ -86,7 +80,7 @@ trait TraitIdx
      * create_at: 2021-12-27 15:23:07
      * update_at: 2021-12-27 15:23:07
      */
-    protected function export()
+    public function ept()
     {
         $this
             ->typeQuery() // 查询类型
@@ -122,6 +116,22 @@ trait TraitIdx
             $title = Request::param('_title', '导出数据');
             $suffix = Request::param('_suffix', 'xlsx');
             $this->exportProccess($this->idxExport->toArray(), $title, $mapData, $suffix);
+        }
+    }
+
+    /**
+     * 查找多维数组
+     * @param $src
+     * @param $deeps
+     * create_at: 2022-01-24 13:45:56
+     * update_at: 2022-01-24 13:45:56
+     */
+    protected function getVal($src, $deeps) {
+        $needle = array_shift($deeps);
+        if ($needle && $deeps) {
+            return $this->getVal($src[$needle], $deeps);
+        } else {
+            return $src[$needle];
         }
     }
 
@@ -166,6 +176,11 @@ trait TraitIdx
                 foreach ($pieceDatas as $k=>$v) {
                     $tmp = array_merge(array_flip($keySort), $v);
                     foreach ($tmp as $g => $h) {
+                        // 嵌套类型表头
+                        if (false !== strpos($g, '.')) {
+                            $parts = explode('.', $g);
+                            $tmp[$g] = $this->getVal($tmp, $parts);
+                        }
                         if (!in_array($g, $keySort)) {
                             unset($tmp[$g]);
                         }

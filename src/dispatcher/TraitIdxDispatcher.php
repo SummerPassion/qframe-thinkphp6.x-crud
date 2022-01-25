@@ -51,4 +51,21 @@ trait TraitIdxDispatcher
             return View::fetch();
         }
     }
+
+    /**
+     * 导出
+     * create_at: 2022-01-25 15:12:12
+     * update_at: 2022-01-25 15:12:12
+     */
+    public function ept()
+    {
+        $model = $this->targetModel();
+        if (Request::isPost()) {
+            try {
+                return json_suc($model->ept());
+            } catch (Exception $exception) {
+                return json_err($exception->getMessage());
+            }
+        }
+    }
 }
