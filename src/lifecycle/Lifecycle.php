@@ -135,6 +135,18 @@ trait Lifecycle
     }
 
     /**
+     * idx 数据返回前处理
+     * @param $data
+     * @return mixed
+     * create_at: 2022-01-27 09:17:02
+     * update_at: 2022-01-27 09:17:02
+     */
+    public function idxDataHandle($data)
+    {
+        return $data;
+    }
+
+    /**
      * idx 模板变量赋值
      * @return array
      * create_at: 2021-12-03 09:46:58

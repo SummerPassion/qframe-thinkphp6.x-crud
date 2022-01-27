@@ -528,7 +528,7 @@ trait TraitIdx
             ->pageQuery() // 分页
             ->eachQuery(); // 分页数据处理
 
-        $this->idxData['list'] = $this->queryCus->toArray();
+        $this->idxData['list'] = $this->idxDataHandle($this->queryCus->toArray());
         return true;
     }
 
