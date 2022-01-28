@@ -47,9 +47,10 @@ trait TraitAdd
         // 入库前处理
         $params = $this->bfrAdd($params, $originParams);
         // 新增
-        $add = (new self)->save($params);
+        $mdl = new self;
+        $mdl->save($params);
         // 入库后处理
-        $aftAdd = $this->aftAdd($params, $originParams);
+        $aftAdd = $this->aftAdd($mdl->id, $params, $originParams);
         // 校验页面token
         $this->csrfCheck($originParams);
         return true;

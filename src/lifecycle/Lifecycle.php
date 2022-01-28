@@ -214,13 +214,14 @@ trait Lifecycle
 
     /**
      * 数据入库后处理
+     * @param $id
      * @param $params
      * @param $origin
      * @return bool
      * create_at: 2021-12-10 14:06:04
      * update_at: 2021-12-10 14:06:04
      */
-    public function aftAdd($params, $origin)
+    public function aftAdd($id, $params, $origin)
     {
         // ...
         return true;

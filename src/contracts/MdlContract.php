@@ -100,13 +100,14 @@ interface MdlContract
 
     /**
      * 数据入库后处理
+     * @param $id
      * @param $params
      * @param $origin
      * @return mixed
      * create_at: 2021-12-22 11:30:57
      * update_at: 2021-12-22 11:30:57
      */
-    public function aftAdd($params, $origin);
+    public function aftAdd($id, $params, $origin);
 
     /********************************************* add *****************************************************/
 
