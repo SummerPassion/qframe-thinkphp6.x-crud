@@ -19,6 +19,7 @@ namespace rocket\dispatcher;
 
 use think\facade\Request;
 use think\facade\Db;
+use Exception;
 
 /**
  * del 调度

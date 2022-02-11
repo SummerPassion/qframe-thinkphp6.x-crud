@@ -40,6 +40,17 @@ interface MdlContract
     public function fixedCondition($query);
 
     /**
+     * 数据权限过滤
+     * @param $query
+     * @param $mdl
+     * @param $pk
+     * @return mixed
+     * create_at: 2022-02-11 15:16:08
+     * update_at: 2022-02-11 15:16:08
+     */
+    public function dataAuthFilt($query, $mdl, $pk);
+
+    /**
      * idx 分页数据处理
      * @param $item
      * @param $key

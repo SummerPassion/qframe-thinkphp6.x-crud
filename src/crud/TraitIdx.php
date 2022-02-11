@@ -425,6 +425,7 @@ trait TraitIdx
                             $where[] = [$tbField, $expr, $params[$paramKey]];
                         }
                 }
+
             } else {
                 // 单值 默认 =  eg. ['name']
                 $paramKey = $v;
@@ -434,6 +435,7 @@ trait TraitIdx
         }
 
         $this->queryCus = $this->fixedCondition($this->queryCus->where($where));
+        $this->queryCus = $this->dataAuthFilt($this->queryCus, self::class, $this->pk);
         return $this;
     }
 

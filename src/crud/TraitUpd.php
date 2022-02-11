@@ -17,6 +17,7 @@ declare (strict_types=1);
 
 namespace rocket\crud;
 
+use rocket\authdata\Authdata;
 use think\facade\Request;
 use Exception;
 
@@ -46,6 +47,8 @@ trait TraitUpd
         // 主键
         $id = $params[$this->pk];
         if (!$id) throw new Exception("`{$this->pk}`参数错误， 未知的更新目标！");
+        // 数据权限
+        $this->dataAuth(Authdata::ENV_UD, self::class, $this->pk, $id);
         // 移除更新数据中的主键
         unset($params[$this->pk]);
         // 更新目标是否存在

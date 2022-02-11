@@ -17,6 +17,7 @@ declare (strict_types=1);
 
 namespace rocket\crud;
 
+use rocket\authdata\Authdata;
 use think\facade\Request;
 use Exception;
 
@@ -48,6 +49,8 @@ trait TraitDel
         }
         // 格式化删除目标
         $ids = $this->formatIds($ids);
+        // 数据权限
+        $this->dataAuth(Authdata::ENV_UD, self::class, $this->pk, $ids);
         // 删除前
         $bfr = $this->bfrDel($ids, $originParams);
         // 删除

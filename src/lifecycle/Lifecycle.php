@@ -122,6 +122,20 @@ trait Lifecycle
     }
 
     /**
+     * 数据过滤
+     * @param $query
+     * @param $mdl
+     * @param $pk
+     * @return mixed
+     * create_at: 2022-02-11 15:16:22
+     * update_at: 2022-02-11 15:16:22
+     */
+    public function dataAuthFilt($query, $mdl, $pk)
+    {
+        return $query;
+    }
+
+    /**
      * idx 分页数据处理
      * @param $item
      * @param $key
