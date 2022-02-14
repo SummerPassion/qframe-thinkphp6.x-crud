@@ -54,7 +54,7 @@ trait TraitDel
         // 删除前
         $bfr = $this->bfrDel($ids, $originParams);
         // 删除
-        $del = self::whereIn($this->pk, $ids)->delete();
+        $del = self::destroy(function($query) use ($ids) { $query->whereIn($this->pk, $ids); });
         // 删除后
         (false !== $del) && $this->aftDel($ids, $originParams);
 
