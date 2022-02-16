@@ -46,6 +46,13 @@ trait TraitIdxDispatcher
                 return json_err($exception->getMessage());
             }
         } else {
+            if (property_exists($model, "api")) {
+                try {
+                    return json_suc($model->$action());
+                } catch (Exception $exception) {
+                    return json_err($exception->getMessage());
+                }
+            }
             // 渲染模板变量
             View::assign($model->idxAssign());
             return View::fetch();
