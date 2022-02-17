@@ -348,6 +348,18 @@ trait Lifecycle
     /********************************************* page *****************************************************/
 
     /**
+     * 页面数据自定义查询
+     * @param $query
+     * @return mixed
+     * create_at: 2022-02-17 09:27:22
+     * update_at: 2022-02-17 09:27:22
+     */
+    public function pagedataQuery($query)
+    {
+        return $query;
+    }
+
+    /**
      * 打包页面数据
      * @param $data
      * @return mixed

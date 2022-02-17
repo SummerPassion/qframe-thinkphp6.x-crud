@@ -48,8 +48,10 @@ trait TraitPagedata
             return $dataSet;
         }
 
-        $res = self::field($this->attrsPagedata)->where($this->pk, $id)->find();
-        $res && $dataSet['original'] = $res->toArray();
+        $query = self::field($this->attrsPagedata)->where($this->pk, $id);
+        $this->pagedataQuery($query);
+        $query = $query->find();
+        $query && $dataSet['original'] = $query->toArray();
 
         return $this->packPagedata($dataSet);
     }
