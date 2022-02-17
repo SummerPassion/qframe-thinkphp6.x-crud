@@ -59,6 +59,14 @@ trait TraitCrudBase
     protected static $del_name     = "del";
 
     /**
+     * 操作{页面数据}名
+     * @var string
+     * create_at: 2022-02-17 08:41:57
+     * update_at: 2022-02-17 08:41:57
+     */
+    protected static $pagedata_name = "pagedata";
+
+    /**
      * 操作{添加和编辑页面数据}名
      * @var string
      * create_at: 2021-11-25 09:28:13
