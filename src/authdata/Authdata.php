@@ -93,9 +93,10 @@ class Authdata
                     $subs = $bkUsersRelationsMdl->where("rid", $tenant)->column('uid');
                     $subs[] = $tenant;
                     if ($subs) {
-                        $scope = $subs;
+                        $scope = array_merge($scope, $subs);
                     }
                 }
+                $scope[] = $uid;
                 break;
             case Bkprivileges::DATATYPE_4:
                 // 向下包含 当前登录用户下所有
