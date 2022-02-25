@@ -291,7 +291,7 @@ trait TraitIdx
      */
     protected function pageQuery()
     {
-        $pageLimit = Request::param('page_limit'); // 分页条数
+        $pageLimit = Request::param('page_limit') ?: $this->pageLimit; // 分页条数
 
         $this->queryCus = $this->queryCus->paginate($pageLimit);
         return $this;
