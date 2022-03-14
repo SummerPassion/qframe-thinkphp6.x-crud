@@ -40,7 +40,7 @@ trait Lifecycle
         // TOKEN 校验
         $check = Request::checkToken('__token__', $params);
         if(false === $check) {
-            throw new Exception('页面token失效，请刷新页面后重试！');
+            throw new Exception( lang('lifecycle.the page token is invalid. Please refresh the page and try again') );
         }
 
         return true;
@@ -59,25 +59,25 @@ trait Lifecycle
         if (is_array($id)) {
             foreach ($id as $v) {
                 if (!is_string($v) && !is_numeric($v) && empty($v)) {
-                    throw new Exception('参数错误！');
+                    throw new Exception( lang('lifecycle.parameters error') );
                 }
                 $specialChars = $this->existsSpecialChar((string) $v);
-                if ($specialChars > 0) throw new Exception('含有特殊字符!');
+                if ($specialChars > 0) throw new Exception( lang('lifecycle.contains special characters') );
             }
             return implode(',', $id);
         } else if (is_string($id) || is_numeric($id)) {
             $id = (string) $id;
             $specialChars = $this->existsSpecialChar($id);
-            if ($specialChars > 0) throw new Exception('含有特殊字符!');
+            if ($specialChars > 0) throw new Exception( lang('lifecycle.contains special characters') );
             $tmp = explode(',', $id);
             foreach ($tmp as $v) {
                 if (empty($v)) {
-                    throw new Exception('参数错误！');
+                    throw new Exception( lang('lifecycle.parameters error') );
                 }
             }
             return $id;
         } else {
-            throw new Exception("不支持的参数格式！");
+            throw new Exception( lang('lifecycle.unsupported parameter format') );
         }
     }
 

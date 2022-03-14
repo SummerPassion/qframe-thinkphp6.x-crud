@@ -41,11 +41,11 @@ trait TraitDel
         $filterParams = Request::only($this->attrsDel);
         // 目标`id`
         if (!key_exists($this->pk, $originParams)) {
-            throw new Exception("`{$this->pk}`参数名不存在，请使用主键！");
+            throw new Exception( "`{$this->pk}`" . lang('trait_del.parameter name does not exist, please use primary key') );
         }
         $ids = $originParams[$this->pk];
         if (!$ids) {
-            throw new Exception("`{$this->pk}`参数错误， 未知的删除目标！");
+            throw new Exception("`{$this->pk}`"  . lang('trait_del.parameter error, unknown deletion target') );
         }
         // 格式化删除目标
         $ids = $this->formatIds($ids);

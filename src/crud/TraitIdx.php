@@ -111,9 +111,9 @@ trait TraitIdx
             // 后台导出
             // 表头和接口数据映射关系
             $mapData = Request::param('_mapData');
-            if (!$mapData) throw new Exception("未定义表头和接口数据映射！");
+            if (!$mapData) throw new Exception( lang('trait_idx.header and interface data mapping are not defined') );
             $mapData = json_decode($mapData, true);
-            $title = Request::param('_title', '导出数据');
+            $title = Request::param('_title', lang('trait_idx.export data'));
             $suffix = Request::param('_suffix', 'xlsx');
             $this->exportProccess($this->idxExport->toArray(), $title, $mapData, $suffix);
         }
@@ -353,8 +353,8 @@ trait TraitIdx
                 $paramKey = key($v);
                 $val = $v[$paramKey];
                 // 数组
-                if (!is_array($val)) throw new Exception("【queryTerms】{$paramKey} 配置错误！");
-                if (count($val) < 2) throw new Exception('【queryTerms】数组类型至少需要2个参数[\'表字段\', \'表达式\']！');
+                if (!is_array($val)) throw new Exception("【queryTerms】{$paramKey}" . lang('trait_idx.configuration error'));
+                if (count($val) < 2) throw new Exception('【queryTerms】' . lang('trait_idx.array type requires at least 2 parameters'));
                 $tbField = $val[0]; // 查询表字段
                 $expr    = $val[1]; // 表达式
 
@@ -503,7 +503,7 @@ trait TraitIdx
                 $field = $this->expr() ?: 0;
                 break;
             default:
-                throw new Exception('不支持的查询类型！');
+                throw new Exception( lang('trait_idx.unsupported query type') );
         }
 
         $this->queryCus = self::field($field);

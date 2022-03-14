@@ -49,9 +49,9 @@ class Authdata
      */
     public static function authMdl($env, string $mdl, ?string $pk, $ids, $uid, string $dataAuthVar = "create_by")
     {
-        //
+        // 目标数据不存在
         if (self::ENV_UD == $env && empty($ids)) {
-            throw new Exception("未知的目标数据！");
+            throw new Exception( lang('auth_data.unknown target data') );
         }
 
         // 请求控制器 & 方法
@@ -110,7 +110,7 @@ class Authdata
         if (self::ENV_UD == $env && Bkprivileges::DATATYPE_1 != $dataType) {
             $valid = $model->whereIn($pk, $ids)->whereNotIn($dataAuthVar, $scope)->find();
             if ($valid) {
-                throw new Exception("无数据权限进行该操作！");
+                throw new Exception( lang('auth_data.no data permission for this operation') );
             }
         }
 

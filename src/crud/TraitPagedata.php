@@ -42,7 +42,7 @@ trait TraitPagedata
         // 参数
         $params = Request::param();
 
-        if (!isset($params[$this->pk])) throw new Exception("`{$this->pk}`参数错误， 未知的查询目标！");
+        if (!isset($params[$this->pk])) throw new Exception("`{$this->pk}`" . lang('trait_pagedata.parameter error, unknown query target'));
         $id = $params[$this->pk];
         if (!$id || 0 == count($this->attrsPagedata)) {
             return $dataSet;
