@@ -97,7 +97,7 @@ trait TraitIdx
             if (!is_array($checkedIds)) {
                 $checkedIds = explode(',', $checkedIds);
             }
-            $this->queryCus->whereIn($this->pk, $checkedIds);
+            $this->queryCus->whereIn($this->alias . '.' . $this->pk, $checkedIds);
         }
 
         $this->idxExport = $this->queryCus->select();
