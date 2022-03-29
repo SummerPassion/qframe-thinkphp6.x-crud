@@ -51,6 +51,15 @@ interface MdlContract
     public function dataAuthFilt($query, $mdl, $pk);
 
     /**
+     * 自定义处理 数据权限作用域
+     * @param $scope
+     * @return mixed
+     * create_at: 2022-03-29 16:25:13
+     * update_at: 2022-03-29 16:25:13
+     */
+    public function handleScope($scope);
+
+    /**
      * idx 分页数据处理
      * @param $item
      * @param $key

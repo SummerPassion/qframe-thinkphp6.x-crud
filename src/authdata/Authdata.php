@@ -108,6 +108,7 @@ class Authdata
         }
 
         if (self::ENV_UD == $env && Bkprivileges::DATATYPE_1 != $dataType) {
+            $scope = $model->handleScope($scope);
             $valid = $model->whereIn($pk, $ids)->whereNotIn($dataAuthVar, $scope)->find();
             if ($valid) {
                 throw new Exception( lang('auth_data.no data permission for this operation') );
