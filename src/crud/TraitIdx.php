@@ -342,95 +342,93 @@ trait TraitIdx
         // 查询条件
         $where = [];
 
-        if (!$this->queryTerms) {
-            return $this;
-        }
+        if ($this->queryTerms) {
+            // 参数列表
+            $params = Request::all();
+            foreach ($this->queryTerms as $k => $v) {
+                if (is_array($v)) {
+                    $paramKey = key($v);
+                    $val = $v[$paramKey];
+                    // 数组
+                    if (!is_array($val)) throw new Exception("【queryTerms】{$paramKey}" . lang('trait_idx.configuration error'));
+                    if (count($val) < 2) throw new Exception('【queryTerms】' . lang('trait_idx.array type requires at least 2 parameters'));
+                    $tbField = $val[0]; // 查询表字段
+                    $expr    = $val[1]; // 表达式
 
-        // 参数列表
-        $params = Request::all();
-        foreach ($this->queryTerms as $k => $v) {
-            if (is_array($v)) {
-                $paramKey = key($v);
-                $val = $v[$paramKey];
-                // 数组
-                if (!is_array($val)) throw new Exception("【queryTerms】{$paramKey}" . lang('trait_idx.configuration error'));
-                if (count($val) < 2) throw new Exception('【queryTerms】' . lang('trait_idx.array type requires at least 2 parameters'));
-                $tbField = $val[0]; // 查询表字段
-                $expr    = $val[1]; // 表达式
+                    switch ($expr) {
+                        case 'between':
+                            if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
+                            if (isset($params[$paramKey][0]) && $params[$paramKey][0]) {
+                                $where[] = [$tbField , '>=', $params[$paramKey][0]];
+                            }
+                            if (isset($params[$paramKey][1]) && $params[$paramKey][1]) {
+                                $where[] = [$tbField , '<=', $params[$paramKey][1]];
+                            }
+                            break;
+                        case 'time':
+                            // 开始 拼接后缀
+                            $suffixStart = $paramKey. '_start';
+                            // 结束 拼接后缀
+                            $suffixEnd = $paramKey . '_end';
+                            if (isset($params[$suffixStart]) && $params[$suffixStart]) {
+                                if (!is_numeric($params[$suffixStart])) {
+                                    $params[$suffixStart] = strtotime(date('Y-m-d H:i:s', (int) strtotime($params[$suffixStart])));
+                                } else {
+                                    $params[$suffixStart] = strtotime(date('Y-m-d H:i:s', (int) $params[$suffixStart]));
+                                }
+                                $where[] = [$tbField , '>=', $params[$suffixStart]];
+                            }
+                            if (isset($params[$suffixEnd]) && $params[$suffixEnd]) {
+                                if (!is_numeric($params[$suffixEnd])) {
+                                    $params[$suffixEnd] = strtotime(date('Y-m-d H:i:s', (int) strtotime($params[$suffixEnd])));
+                                } else {
+                                    $params[$suffixEnd] = strtotime(date('Y-m-d H:i:s', (int) $params[$suffixEnd]));
+                                }
+                                $where[] = [$tbField , '<=', $params[$suffixEnd]];
+                            }
+                            break;
+                        case 'date':
+                            // 开始 拼接后缀
+                            $suffixStart = $paramKey. '_start';
+                            // 结束 拼接后缀
+                            $suffixEnd = $paramKey . '_end';
+                            if (isset($params[$suffixStart]) && $params[$suffixStart]) {
+                                if (!is_numeric($params[$suffixStart])) {
+                                    $params[$suffixStart] = strtotime(date('Y-m-d 0:0:0', (int) strtotime($params[$suffixStart])));
+                                } else {
+                                    $params[$suffixStart] = strtotime(date('Y-m-d 0:0:0', (int) $params[$suffixStart]));
+                                }
+                                $where[] = [$tbField , '>=', $params[$suffixStart]];
+                            }
+                            if (isset($params[$suffixEnd]) && $params[$suffixEnd]) {
+                                if (!is_numeric($params[$suffixEnd])) {
+                                    $params[$suffixEnd] = strtotime(date('Y-m-d 23:59:59', (int) strtotime($params[$suffixEnd])));
+                                } else {
+                                    $params[$suffixEnd] = strtotime(date('Y-m-d 23:59:59', (int) $params[$suffixEnd]));
+                                }
+                                $where[] = [$tbField , '<=', $params[$suffixEnd]];
+                            }
+                            break;
+                        case 'like':
+                            if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
+                            $where[] = [$tbField , 'like', "%{$params[$paramKey]}%"];
+                            break;
+                        default:
+                            if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
+                            if ('null_val' == $params[$paramKey]) {
+                                // 特殊值比较 判断 null
+                                $where[] = [$tbField, 'EXP', Db::raw('IS NULL')];
+                            } else {
+                                $where[] = [$tbField, $expr, $params[$paramKey]];
+                            }
+                    }
 
-                switch ($expr) {
-                    case 'between':
-                        if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
-                        if (isset($params[$paramKey][0]) && $params[$paramKey][0]) {
-                            $where[] = [$tbField , '>=', $params[$paramKey][0]];
-                        }
-                        if (isset($params[$paramKey][1]) && $params[$paramKey][1]) {
-                            $where[] = [$tbField , '<=', $params[$paramKey][1]];
-                        }
-                        break;
-                    case 'time':
-                        // 开始 拼接后缀
-                        $suffixStart = $paramKey. '_start';
-                        // 结束 拼接后缀
-                        $suffixEnd = $paramKey . '_end';
-                        if (isset($params[$suffixStart]) && $params[$suffixStart]) {
-                            if (!is_numeric($params[$suffixStart])) {
-                                $params[$suffixStart] = strtotime(date('Y-m-d H:i:s', (int) strtotime($params[$suffixStart])));
-                            } else {
-                                $params[$suffixStart] = strtotime(date('Y-m-d H:i:s', (int) $params[$suffixStart]));
-                            }
-                            $where[] = [$tbField , '>=', $params[$suffixStart]];
-                        }
-                        if (isset($params[$suffixEnd]) && $params[$suffixEnd]) {
-                            if (!is_numeric($params[$suffixEnd])) {
-                                $params[$suffixEnd] = strtotime(date('Y-m-d H:i:s', (int) strtotime($params[$suffixEnd])));
-                            } else {
-                                $params[$suffixEnd] = strtotime(date('Y-m-d H:i:s', (int) $params[$suffixEnd]));
-                            }
-                            $where[] = [$tbField , '<=', $params[$suffixEnd]];
-                        }
-                        break;
-                    case 'date':
-                        // 开始 拼接后缀
-                        $suffixStart = $paramKey. '_start';
-                        // 结束 拼接后缀
-                        $suffixEnd = $paramKey . '_end';
-                        if (isset($params[$suffixStart]) && $params[$suffixStart]) {
-                            if (!is_numeric($params[$suffixStart])) {
-                                $params[$suffixStart] = strtotime(date('Y-m-d 0:0:0', (int) strtotime($params[$suffixStart])));
-                            } else {
-                                $params[$suffixStart] = strtotime(date('Y-m-d 0:0:0', (int) $params[$suffixStart]));
-                            }
-                            $where[] = [$tbField , '>=', $params[$suffixStart]];
-                        }
-                        if (isset($params[$suffixEnd]) && $params[$suffixEnd]) {
-                            if (!is_numeric($params[$suffixEnd])) {
-                                $params[$suffixEnd] = strtotime(date('Y-m-d 23:59:59', (int) strtotime($params[$suffixEnd])));
-                            } else {
-                                $params[$suffixEnd] = strtotime(date('Y-m-d 23:59:59', (int) $params[$suffixEnd]));
-                            }
-                            $where[] = [$tbField , '<=', $params[$suffixEnd]];
-                        }
-                        break;
-                    case 'like':
-                        if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
-                        $where[] = [$tbField , 'like', "%{$params[$paramKey]}%"];
-                        break;
-                    default:
-                        if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
-                        if ('null_val' == $params[$paramKey]) {
-                            // 特殊值比较 判断 null
-                            $where[] = [$tbField, 'EXP', Db::raw('IS NULL')];
-                        } else {
-                            $where[] = [$tbField, $expr, $params[$paramKey]];
-                        }
+                } else {
+                    // 单值 默认 =  eg. ['name']
+                    $paramKey = $v;
+                    if (!isset($params[$paramKey]) || !$params[$paramKey]) continue;
+                    $where[] = [$paramKey, '=', $params[$paramKey]];
                 }
-
-            } else {
-                // 单值 默认 =  eg. ['name']
-                $paramKey = $v;
-                if (!isset($params[$paramKey]) || !$params[$paramKey]) continue;
-                $where[] = [$paramKey, '=', $params[$paramKey]];
             }
         }
 
