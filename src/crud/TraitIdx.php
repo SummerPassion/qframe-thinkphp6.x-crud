@@ -193,6 +193,7 @@ trait TraitIdx
                         $cnt = 0;
                     }
                     // 每行写入到临时文件
+                    $tmp = $this->transCode($tmp);
                     fputcsv($fp, array_values($tmp));
                 }
                 fclose($fp);  //每生成一个文件关闭
@@ -246,6 +247,23 @@ trait TraitIdx
 
             exit();
         }
+    }
+
+    /**
+     * 处理长数字转科学计数法
+     * @param array $arr
+     * @return array
+     * create_at: 2022-06-19 18:43:41
+     * update_at: 2022-06-19 18:43:41
+     */
+    protected  function transCode(array $arr){
+        foreach ($arr as $k=>$v) {
+            if (is_numeric($v) && strlen((string) $v) >= 12) {
+                $arr[$k] = "\t" . $v;
+            }
+        }
+
+        return $arr;
     }
 
     /**
