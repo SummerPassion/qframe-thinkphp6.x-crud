@@ -258,7 +258,7 @@ trait TraitIdx
      */
     protected  function transCode(array $arr){
         foreach ($arr as $k=>$v) {
-            if (is_numeric($v) && strlen((string) $v) >= 12) {
+            if (is_numeric($v)) {
                 $arr[$k] = "\t" . $v;
             }
         }
