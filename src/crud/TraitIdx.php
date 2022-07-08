@@ -106,6 +106,12 @@ trait TraitIdx
         $approachBack = Request::param('_approachBack/b', false);
         if (!$approachBack) {
             // 前台导出 仅返回数据
+            if ($this->idxExport) {
+                $this->idxExport = $this->idxExport->toArray();
+                foreach ($this->idxExport as $k=>$v) {
+                    $this->idxExport[$k] = $this->transCode($v);
+                }
+            }
             return $this->idxExport;
         } else {
             // 后台导出
