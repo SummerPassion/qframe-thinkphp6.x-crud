@@ -117,7 +117,7 @@ trait Lifecycle
      */
     public function midWithTrashed()
     {
-        return true;
+        return false;
     }
 
     /**
