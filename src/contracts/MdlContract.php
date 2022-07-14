@@ -31,6 +31,14 @@ interface MdlContract
     public function idxQuery($query);
 
     /**
+     * idx 是否withTrashed
+     * @return mixed
+     * create_at: 2022-07-14 11:50:47
+     * update_at: 2022-07-14 11:50:47
+     */
+    public function midWithTrashed();
+
+    /**
      * idx 固定查询条件
      * @param $query
      * @return mixed

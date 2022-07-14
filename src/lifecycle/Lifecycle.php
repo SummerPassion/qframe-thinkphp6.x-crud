@@ -110,6 +110,17 @@ trait Lifecycle
     }
 
     /**
+     * idx 是否withTrashed
+     * @return bool
+     * create_at: 2022-07-14 11:50:11
+     * update_at: 2022-07-14 11:50:11
+     */
+    public function midWithTrashed()
+    {
+        return true;
+    }
+
+    /**
      * idx 固定查询条件
      * @param $query
      * @return mixed

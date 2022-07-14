@@ -528,7 +528,11 @@ trait TraitIdx
                 throw new Exception( lang('trait_idx.unsupported query type') );
         }
 
-        $this->queryCus = self::field($field);
+        if ($this->midWithTrashed()) {
+            $this->queryCus = self::withTrashed()->field($field);
+        } else {
+            $this->queryCus = self::field($field);
+        }
         return $this;
     }
 
