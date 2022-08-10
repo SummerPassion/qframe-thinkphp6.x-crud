@@ -438,7 +438,7 @@ trait TraitIdx
                             $where[] = [$tbField , 'like', "%{$params[$paramKey]}%"];
                             break;
                         default:
-                            if (!isset($params[$paramKey]) || !$params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
+                            if (!isset($params[$paramKey]) || null === $params[$paramKey]) continue 2; // 查询请求参数中无值直接跳过
                             if ('null_val' == $params[$paramKey]) {
                                 // 特殊值比较 判断 null
                                 $where[] = [$tbField, 'EXP', Db::raw('IS NULL')];
