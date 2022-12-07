@@ -580,8 +580,34 @@ trait TraitIdx
                     }
                 });
             }
+
+            // 计算sum时去除append项
+            $dataSet = $this->handleAppend($dataSet);
+
             $this->idxData['sum'] = $dataSet[0] ?? [];
         }
+    }
+
+    /**
+     * 计算sum时去除append项
+     * @param $dataSet
+     * @return bool|mixed
+     * create_at: 2022-12-07 10:48:59
+     * update_at: 2022-12-07 10:48:59
+     */
+    protected function handleAppend($dataSet)
+    {
+        if (!$dataSet) {
+            return true;
+        }
+
+        foreach ($dataSet as $k => $v) {
+            if ($v instanceof $this) {
+                $v->append = [];
+            }
+        }
+
+        return $dataSet;
     }
 
     /**
