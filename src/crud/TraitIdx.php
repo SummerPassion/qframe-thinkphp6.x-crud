@@ -108,6 +108,7 @@ trait TraitIdx
             // 前台导出 仅返回数据
             if ($this->idxExport) {
                 $this->idxExport = $this->idxExport->toArray();
+                $this->idxExport = $this->eptDataHandle($this->idxExport);
                 foreach ($this->idxExport as $k=>$v) {
                     $this->idxExport[$k] = $this->transCode($v);
                 }
@@ -121,7 +122,9 @@ trait TraitIdx
             $mapData = json_decode($mapData, true);
             $title = Request::param('_title', lang('trait_idx.export data'));
             $suffix = Request::param('_suffix', 'xlsx');
-            $this->exportProccess($this->idxExport->toArray(), $title, $mapData, $suffix);
+            $this->idxExport = $this->idxExport->toArray();
+            $this->idxExport = $this->eptDataHandle($this->idxExport);
+            $this->exportProccess($this->idxExport, $title, $mapData, $suffix);
         }
     }
 

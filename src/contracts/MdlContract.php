@@ -93,6 +93,24 @@ interface MdlContract
      */
     public function idxAddition(): array;
 
+    /**
+     * idx 數據處理
+     * @param $data
+     * @return mixed
+     * create_at: 2023-01-07 13:30:42
+     * update_at: 2023-01-07 13:30:42
+     */
+    public function idxDataHandle($data);
+
+    /**
+     * ept 前數據處理
+     * @param $data
+     * @return mixed
+     * create_at: 2023-01-07 13:30:50
+     * update_at: 2023-01-07 13:30:50
+     */
+    public function eptDataHandle($data);
+
     /********************************************* idx *****************************************************/
 
     /********************************************* add *****************************************************/
